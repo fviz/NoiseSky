@@ -1,6 +1,9 @@
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.opengl.PShader;
+import themidibus.ControlChange;
 import themidibus.MidiBus;
+import themidibus.Note;
 import oscP5.*;
 
 import javax.sound.midi.MidiMessage;
@@ -8,36 +11,42 @@ import javax.sound.midi.MidiMessage;
 public class NoiseSky extends PApplet {
 
     private MidiBus midiInterface;
-    private PShader myShader;
+    private PShader mainShader;
+    private PShader brightShader;
+    private PShader currentShader;
+    private PShader[] shaders;
     private float timeCount;
     private OscP5 osc;
 
-    private float XFOVDistortion = 1;
-    private float weirdMirroring = 1;
-    private float amount = 1;
-    private float clipping;
-    private float noise1 = 1;
-    private float noise2 = 8;
-    private float size = 1;
+    private float XFOVDistortion = 127;
+    private float weirdMirroring = (float) 2;
+    private float amount = (float) 1.5;
+    private float clipping = (float) 12;
+    private float noise1 = (float) 20;
+    private float noise2 = (float) 20;
+    private float size = 20;
 
     public void settings() {
-        size(1280, 720, P2D);
+        size(1280, 720, P3D);
+        fullScreen();
     }
-
     public void setup() {
+        osc = new OscP5(this,12000);
+
         frameRate(60);
-        myShader = loadShader("frag.glsl", "vert.glsl");
+        mainShader = loadShader("mainShader/frag.glsl", "mainShader/vert.glsl");
+        brightShader = loadShader("brightShader/frag.glsl", "brightShader/vert.glsl");
+        currentShader = mainShader;
         midiInterface = new MidiBus(this);
         midiInterface.addInput(1);
 
-        osc = new OscP5(this,12000);
 
     }
 
     public void draw() {
         timeCount += 0.01;
         sets();
-        shader(myShader);
+        shader(currentShader);
 
         beginShape();
         vertex(0, 0);
@@ -45,6 +54,7 @@ public class NoiseSky extends PApplet {
         vertex(width, height);
         vertex(0, height);
         endShape();
+        resetShader();
 
     }
 
@@ -113,20 +123,81 @@ public class NoiseSky extends PApplet {
         if (oscMessageInput.addrPattern().equals("/main/tune")) {
             float value = oscMessageInput.get(0).floatValue();
             noise1 = 1 + noise1 * value;
-            noise2 = 8 + value * -2;
-            size = 1 + value * 5;
+            noise2 = 8 + value * (float) -1.2;
+            size = 1 + value * -2;
+            XFOVDistortion = 1 + value * 5;
+            if (value > 0.1) {
+                currentShader = brightShader;
+                println("BRIGHT");
+            } else {
+                currentShader = mainShader;
+            }
         }
     }
 
+    public void noteOn(Note note) {
+        // Receive a noteOn
+        println();
+        println("Note On:");
+        println("--------");
+        println("Channel:"+note.channel());
+        println("Pitch:"+note.pitch());
+        println("Velocity:"+note.velocity());
+
+        // Main
+        if (note.pitch == 39) {
+            XFOVDistortion = 0;
+            weirdMirroring = 0;
+            amount = 4;
+            clipping = 10;
+            noise1 = (float) 0.7;
+            noise2 = 20;
+            size = 7;
+        }
+
+        // Cross
+        if (note.pitch == 31) {
+            XFOVDistortion = 2;
+            weirdMirroring = (float) 0.17322;
+            amount = 2;
+            clipping = (float) 5.66;
+            noise1 = (float) 10;
+            noise2 = (float) 14.322;
+            size = 7;
+        }
+
+        // Lines
+        if (note.pitch == 23) {
+            XFOVDistortion = 127;
+            weirdMirroring = (float) 2;
+            amount = (float) 1.5;
+            clipping = (float) 12;
+            noise1 = (float) 20;
+            noise2 = (float) 20;
+            size = 20;
+        }
+    }
+    public void noteOff(Note note) {
+        // Receive a noteOff
+        println();
+        println("Note Off:");
+        println("--------");
+        println("Channel:"+note.channel());
+        println("Pitch:"+note.pitch());
+        println("Velocity:"+note.velocity());
+    }
+
+
+    // Shader sets
     public void sets() {
-        myShader.set("time", timeCount);
-        myShader.set("XFOVDistortionInput", XFOVDistortion);
-        myShader.set("weirdMirroringInput", weirdMirroring);
-        myShader.set("amountInput", amount);
-        myShader.set("clippingInput", clipping);
-        myShader.set("noise1Input", noise1);
-        myShader.set("noise2Input", noise2);
-        myShader.set("sizeInput", size);
+        mainShader.set("time", timeCount);
+        mainShader.set("XFOVDistortionInput", XFOVDistortion);
+        mainShader.set("weirdMirroringInput", weirdMirroring);
+        mainShader.set("amountInput", amount);
+        mainShader.set("clippingInput", clipping);
+        mainShader.set("noise1Input", noise1);
+        mainShader.set("noise2Input", noise2);
+        mainShader.set("sizeInput", size);
     }
 
     public static void main(String[] args) {
