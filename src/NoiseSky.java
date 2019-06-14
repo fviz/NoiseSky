@@ -13,6 +13,7 @@ public class NoiseSky extends PApplet {
     private MidiBus midiInterface;
     private Minim minim;
     AudioInput input;
+    BeatDetect beat;
 
     private PShader mainShader;
     private PShader brightShader;
@@ -253,6 +254,17 @@ public class NoiseSky extends PApplet {
         mainShader.set("sizeInput", size);
         mainShader.set("speed", speed);
         mainShader.set("toggleFill", toggleFill);
+
+        brightShader.set("time", timeCount);
+        brightShader.set("XFOVDistortionInput", XFOVDistortion);
+        brightShader.set("weirdMirroringInput", weirdMirroring);
+        brightShader.set("amountInput", amount);
+        brightShader.set("clippingInput", clipping);
+        brightShader.set("noise1Input", noise1);
+        brightShader.set("noise2Input", noise2);
+        brightShader.set("sizeInput", size);
+        brightShader.set("speed", speed);
+        brightShader.set("toggleFill", toggleFill);
     }
 
     public static void main(String[] args) {
