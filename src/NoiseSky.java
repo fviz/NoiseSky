@@ -1,5 +1,7 @@
 import ddf.minim.AudioInput;
+import ddf.minim.AudioListener;
 import ddf.minim.Minim;
+import ddf.minim.analysis.BeatDetect;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.opengl.PShader;
@@ -7,7 +9,9 @@ import themidibus.ControlChange;
 import themidibus.MidiBus;
 import themidibus.Note;
 import oscP5.*;
+
 import javax.sound.midi.MidiMessage;
+
 public class NoiseSky extends PApplet {
 
     private MidiBus midiInterface;
@@ -36,8 +40,9 @@ public class NoiseSky extends PApplet {
         size(1280, 720, P3D);
 //        fullScreen();
     }
+
     public void setup() {
-        osc = new OscP5(this,12000);
+        osc = new OscP5(this, 12000);
 
         frameRate(60);
         mainShader = loadShader("mainShader/frag.glsl", "mainShader/vert.glsl");
@@ -48,10 +53,23 @@ public class NoiseSky extends PApplet {
 
         minim = new Minim(this);
         input = minim.getLineIn();
+        beat = new BeatDetect(input.bufferSize(), input.sampleRate());
+        beat.setSensitivity(300);
 
     }
 
     public void draw() {
+
+        if (beat.isKick()) {
+            XFOVDistortion = 127;
+            weirdMirroring = (float) 2;
+            amount = (float) 1.5;
+            clipping = (float) 12;
+            noise1 = (float) 20;
+            noise2 = (float) 20;
+            size = 20;
+        }
+
         Functions.run();
         timeCount += 0.01;
         sets();
@@ -65,7 +83,7 @@ public class NoiseSky extends PApplet {
         endShape();
         resetShader();
 
-        text(input.mix.level()*10, 100, 100);
+        text(input.mix.level() * 10, 100, 100);
 
 
     }
@@ -77,9 +95,9 @@ public class NoiseSky extends PApplet {
         println();
         println("MidiMessage Data:");
         println("--------");
-        println("Status Byte/MIDI Command:"+message.getStatus());
-        for (int i = 1;i < message.getMessage().length;i++) {
-            println("Param "+(i+1)+": "+(int)(message.getMessage()[i] & 0xFF));
+        println("Status Byte/MIDI Command:" + message.getStatus());
+        for (int i = 1; i < message.getMessage().length; i++) {
+            println("Param " + (i + 1) + ": " + (int) (message.getMessage()[i] & 0xFF));
         }
 
         int channel = message.getMessage()[1];
@@ -139,8 +157,8 @@ public class NoiseSky extends PApplet {
     void oscEvent(OscMessage oscMessageInput) {
         /* print the address pattern and the typetag of the received OscMessage */
         print("### received an osc message.");
-        print(" addrpattern: "+oscMessageInput.addrPattern());
-        println(" typetag: "+oscMessageInput.typetag());
+        print(" addrpattern: " + oscMessageInput.addrPattern());
+        println(" typetag: " + oscMessageInput.typetag());
 
         if (oscMessageInput.addrPattern().equals("/main/tune")) {
             float value = oscMessageInput.get(0).floatValue();
@@ -231,14 +249,15 @@ public class NoiseSky extends PApplet {
             toggleFill = !toggleFill;
         }
     }
+
     public void noteOff(Note note) {
         // Receive a noteOff
         println();
         println("Note Off:");
         println("--------");
-        println("Channel:"+note.channel());
-        println("Pitch:"+note.pitch());
-        println("Velocity:"+note.velocity());
+        println("Channel:" + note.channel());
+        println("Pitch:" + note.pitch());
+        println("Velocity:" + note.velocity());
     }
 
 

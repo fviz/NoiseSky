@@ -22,7 +22,7 @@ in VertexData
 
 out vec4 fragColor;
 
-float XFOV = 1.5707 + sin(time/100) * XFOVDistortionInput;
+float XFOV = 1.5707 + sin(time) * XFOVDistortionInput;
 
 float de(vec3 p){
     float clipping = clippingInput;// Default 4.0
@@ -39,8 +39,7 @@ void main(void) {
     float t = time;
     vec2 viewDir=vec2(0.0, 0.0);
 //    viewDir = vec2(0.0 + (time/10), 0.0 + (time/10));                  // Rotate
-    vec3 pos=vec3(t*2, cos(t)*0.0, 0.0+time);// Camera movement
-        pos.x = pos.x + speed;
+    vec3 pos=vec3(t*2, cos(t)*0.0, 0.0);// Camera movement
 
     vec2 rayDir=(gl_FragCoord.xy-resolution/2.0)/resolution;//x and y from -0.5 to 0.5, weird camera settings. Default 2.0
     rayDir=rayDir*vec2(XFOV, XFOV*(resolution.y/resolution.x))+viewDir;
