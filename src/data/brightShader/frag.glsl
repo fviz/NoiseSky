@@ -62,25 +62,25 @@ void main(void) {
     float par1 = 1;// Default: 1
     float texturing = 1;// Default: 1
     float dist=par1-de(rayPos)*texturing;
-    //    fragColor = vec4(
-    //    dist*1,
-    //    (sin(1.*rayPos.z)/2.0+0.5)/dist*0.6,
-    //    (sin(rayPos.x/10.0)/2.0+0.5)/dist,
-    //    1.0
-    //    );
+        fragColor = vec4(
+        dist*1,
+        (sin(1.*rayPos.z)/2.0+0.5)/dist*0.6,
+        (sin(rayPos.x/10.0)/2.0+0.5)/dist,
+        1.0
+        );
 
-    fragColor = vec4(
-    0+dist/rayPos.z-0.1,
-    0+dist/rayPos.z-0.1,
-    0+dist/rayPos.z-0.1,
-    1.0
-    );
+//    fragColor = vec4(
+//    0+dist/rayPos.z-0.1,
+//    0+dist/rayPos.z-0.1,
+//    0+dist/rayPos.z-0.1,
+//    1.0
+//    );
 
-            fragColor = vec4(
-                rayPos.x*sin(dist),
-                rayPos.x*sin(dist-20000),
-                rayPos.x*sin(dist-20000),
-                1.0
-            );
+//            fragColor = vec4(
+//                rayPos.x*sin(dis t),
+//                rayPos.x*sin(dist-20000),
+//                rayPos.x*sin(dist-20000),
+//                1.0
+//            );
 
 }
