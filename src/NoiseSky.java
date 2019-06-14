@@ -6,7 +6,6 @@ import themidibus.MidiBus;
 import themidibus.Note;
 import oscP5.*;
 
-
 import javax.sound.midi.MidiMessage;
 
 public class NoiseSky extends PApplet {
@@ -161,6 +160,15 @@ public class NoiseSky extends PApplet {
             noise2 = 20;
             size = 7;
         }
+        if (note.pitch == 38) {
+            Functions.XFOVDistortionTarget = 0;
+            Functions.weirdMirroringTarget = 63;
+            Functions.amountTarget = 56;
+            Functions.clippingTarget = 63;
+            Functions.noise1Target = (float) 4;
+            Functions.noise2Target = 127;
+            Functions.sizeTarget = 52;
+        }
 
         // Cross
         if (note.pitch == 31) {
@@ -172,6 +180,15 @@ public class NoiseSky extends PApplet {
             noise2 = (float) 14.322;
             size = 7;
         }
+        if (note.pitch == 30) {
+            Functions.XFOVDistortionTarget = 5;
+            Functions.weirdMirroringTarget = 63;
+            Functions.amountTarget = 25;
+            Functions.clippingTarget = (float) 60;
+            Functions.noise1Target = (float) 63;
+            Functions.noise2Target = (float) 89;
+            Functions.sizeTarget = 48;
+        }
 
         // Lines
         if (note.pitch == 23) {
@@ -182,6 +199,15 @@ public class NoiseSky extends PApplet {
             noise1 = (float) 20;
             noise2 = (float) 20;
             size = 20;
+        }
+        if (note.pitch == 22) {
+            Functions.XFOVDistortionTarget = 127;
+            Functions.weirdMirroringTarget = 127;
+            Functions.amountTarget = 20;
+            Functions.clippingTarget = 74;
+            Functions.noise1Target = (float) 127;
+            Functions.noise2Target = 127;
+            Functions.sizeTarget = 127;
         }
     }
     public void noteOff(Note note) {
