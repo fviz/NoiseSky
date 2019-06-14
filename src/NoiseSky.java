@@ -1,3 +1,5 @@
+import ddf.minim.AudioInput;
+import ddf.minim.Minim;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.opengl.PShader;
@@ -9,6 +11,9 @@ import javax.sound.midi.MidiMessage;
 public class NoiseSky extends PApplet {
 
     private MidiBus midiInterface;
+    private Minim minim;
+    AudioInput input;
+
     private PShader mainShader;
     private PShader brightShader;
     private PShader currentShader;
@@ -23,6 +28,8 @@ public class NoiseSky extends PApplet {
     static float noise1 = (float) 20;
     static float noise2 = (float) 20;
     static float size = 20;
+    static float speed = 0;
+    static boolean toggleFill;
 
     public void settings() {
         size(1280, 720, P3D);
@@ -38,6 +45,8 @@ public class NoiseSky extends PApplet {
         midiInterface = new MidiBus(this);
         midiInterface.addInput(1);
 
+        minim = new Minim(this);
+        input = minim.getLineIn();
 
     }
 
@@ -55,19 +64,22 @@ public class NoiseSky extends PApplet {
         endShape();
         resetShader();
 
+        text(input.mix.level()*10, 100, 100);
+
+
     }
 
     public void midiMessage(MidiMessage message) { // You can also use midiMessage(MidiMessage message, long timestamp, String bus_name)
         // Receive a MidiMessage
         // MidiMessage is an abstract class, the actual passed object will be either javax.sound.midi.MetaMessage, javax.sound.midi.ShortMessage, javax.sound.midi.SysexMessage.
         // Check it out here http://java.sun.com/j2se/1.5.0/docs/api/javax/sound/midi/package-summary.html
-//        println();
-//        println("MidiMessage Data:");
-//        println("--------");
-//        println("Status Byte/MIDI Command:"+message.getStatus());
-//        for (int i = 1;i < message.getMessage().length;i++) {
-//            println("Param "+(i+1)+": "+(int)(message.getMessage()[i] & 0xFF));
-//        }
+        println();
+        println("MidiMessage Data:");
+        println("--------");
+        println("Status Byte/MIDI Command:"+message.getStatus());
+        for (int i = 1;i < message.getMessage().length;i++) {
+            println("Param "+(i+1)+": "+(int)(message.getMessage()[i] & 0xFF));
+        }
 
         int channel = message.getMessage()[1];
         float value = message.getMessage()[2];
@@ -109,6 +121,11 @@ public class NoiseSky extends PApplet {
 
         if (channel == 55) {
             Functions.easingTarget = map(value, 0, 127, (float) 0.01, (float) 0.1);
+            println("easing: " + Functions.easing);
+        }
+
+        if (channel == 7) {
+            Functions.speedTarget = value;
             println("easing: " + Functions.easing);
         }
 
@@ -207,6 +224,11 @@ public class NoiseSky extends PApplet {
             Functions.noise2Target = 127;
             Functions.sizeTarget = 127;
         }
+
+        // Toggle fill
+        if (note.pitch == 36) {
+            toggleFill = !toggleFill;
+        }
     }
     public void noteOff(Note note) {
         // Receive a noteOff
@@ -229,6 +251,8 @@ public class NoiseSky extends PApplet {
         mainShader.set("noise1Input", noise1);
         mainShader.set("noise2Input", noise2);
         mainShader.set("sizeInput", size);
+        mainShader.set("speed", speed);
+        mainShader.set("toggleFill", toggleFill);
     }
 
     public static void main(String[] args) {

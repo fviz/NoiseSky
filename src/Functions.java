@@ -1,4 +1,4 @@
-import processing.core.PApplet;
+import ddf.minim.ugens.Noise;
 
 public class Functions {
 
@@ -10,6 +10,7 @@ public class Functions {
     static float noise1Target;
     static float noise2Target;
     static float sizeTarget;
+    static float speedTarget;
 
 
     static float easing = (float) 0.01;
@@ -23,6 +24,7 @@ public class Functions {
         noise1();
         noise2();
         size();
+        speed();
     }
 
     private static void easingUpdate() {
@@ -69,5 +71,9 @@ public class Functions {
         float mappedValue = NoiseSky.map(sizeTarget, 0, 127, 0, 20);
         float difference = mappedValue - NoiseSky.size;
         NoiseSky.size += difference * easing;
+    }
+
+    private static void speed() {
+        NoiseSky.speed = speedTarget;
     }
 }

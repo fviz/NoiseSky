@@ -10,6 +10,8 @@ uniform float clippingInput;
 uniform float noise1Input;
 uniform float noise2Input;
 uniform float sizeInput;
+uniform float speed;
+uniform bool toggleFill;
 
 in VertexData
 {
@@ -36,9 +38,9 @@ float de(vec3 p){
 void main(void) {
     float t = time;
     vec2 viewDir=vec2(0.0, 0.0);
-    //    viewDir = vec2(0.0 + time/10, 0.0+ time/10);                  // Rotate
-    vec3 pos=vec3(t*2, cos(t)*0.0, sin(t)*0.0);// Camera movement
-    //    pos = pos * sin(time);
+//    viewDir = vec2(0.0 + (time/10), 0.0 + (time/10));                  // Rotate
+    vec3 pos=vec3(t*2, cos(t)*0.0, 0.0+time);// Camera movement
+        pos.x = pos.x + speed;
 
     vec2 rayDir=(gl_FragCoord.xy-resolution/2.0)/resolution;//x and y from -0.5 to 0.5, weird camera settings. Default 2.0
     rayDir=rayDir*vec2(XFOV, XFOV*(resolution.y/resolution.x))+viewDir;
@@ -53,18 +55,20 @@ void main(void) {
     for (int i=0; i<50; i++){
         //        rayPos=rayPos+unitRay*de(rayPos)-100;                 // Weird mirroring
         rayPos=rayPos+unitRay*de(rayPos)-weirdMirroringInput;// Weird mirroring
-        //if (abs(de(rayPos))<0.1||length(pos-rayPos)>100.0){break;}
+        if (toggleFill) {
+            if (abs(de(rayPos))<0.1||length(pos-rayPos)>100.0){break;}
+        }
     }
 
     float par1 = 1;// Default: 1
     float texturing = 1;// Default: 1
     float dist=par1-de(rayPos)*texturing;
-    fragColor = vec4(
-    dist*1,
-    (sin(1.*rayPos.z)/2.0+0.5)/dist*0.6,
-    (sin(rayPos.x/10.0)/2.0+0.5)/dist,
-    1.0
-    );
+//    fragColor = vec4(
+//    dist*1,
+//    (sin(1.*rayPos.z)/2.0+0.5)/dist*0.6,
+//    (sin(rayPos.x/10.0)/2.0+0.5)/dist,
+//    1.0
+//    );
 
     fragColor = vec4(
     0+dist/rayPos.z-0.1,
@@ -73,11 +77,11 @@ void main(void) {
     1.0
     );
 
-    //    fragColor = vec4(
-    //        rayPos.x*sin(dist),
-    //        rayPos.x*sin(dist-20000),
-    //        rayPos.x*sin(dist-20000),
-    //        1.0
-    //    );
+//        fragColor = vec4(
+//            rayPos.x*sin(dist),
+//            rayPos.x*sin(dist-20000),
+//            rayPos.x*sin(dist-20000),
+//            1.0
+//        );
 
 }
