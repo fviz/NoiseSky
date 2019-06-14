@@ -10,5 +10,6 @@
     <orderEntry type="library" name="ProcessingDK" level="project" />
     <orderEntry type="library" name="TheMIDIBusLib" level="project" />
     <orderEntry type="library" name="oscP5" level="project" />
+    <orderEntry type="library" name="Minim" level="project" />
   </component>
 </module>

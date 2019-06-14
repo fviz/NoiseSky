@@ -5,9 +5,7 @@ import themidibus.ControlChange;
 import themidibus.MidiBus;
 import themidibus.Note;
 import oscP5.*;
-
 import javax.sound.midi.MidiMessage;
-
 public class NoiseSky extends PApplet {
 
     private MidiBus midiInterface;
@@ -143,12 +141,12 @@ public class NoiseSky extends PApplet {
 
     public void noteOn(Note note) {
         // Receive a noteOn
-        println();
-        println("Note On:");
-        println("--------");
-        println("Channel:"+note.channel());
-        println("Pitch:"+note.pitch());
-        println("Velocity:"+note.velocity());
+//        println();
+//        println("Note On:");
+//        println("--------");
+//        println("Channel:"+note.channel());
+//        println("Pitch:"+note.pitch());
+//        println("Velocity:"+note.velocity());
 
         // Main
         if (note.pitch == 39) {
