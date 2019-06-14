@@ -6,6 +6,7 @@ import themidibus.MidiBus;
 import themidibus.Note;
 import oscP5.*;
 
+
 import javax.sound.midi.MidiMessage;
 
 public class NoiseSky extends PApplet {
@@ -18,17 +19,17 @@ public class NoiseSky extends PApplet {
     private float timeCount;
     private OscP5 osc;
 
-    private float XFOVDistortion = 127;
-    private float weirdMirroring = (float) 2;
-    private float amount = (float) 1.5;
-    private float clipping = (float) 12;
-    private float noise1 = (float) 20;
-    private float noise2 = (float) 20;
-    private float size = 20;
+    static float XFOVDistortion = 127;
+    static float weirdMirroring = (float) 2;
+    static float amount = (float) 1.5;
+    static float clipping = (float) 12;
+    static float noise1 = (float) 20;
+    static float noise2 = (float) 20;
+    static float size = 20;
 
     public void settings() {
         size(1280, 720, P3D);
-        fullScreen();
+//        fullScreen();
     }
     public void setup() {
         osc = new OscP5(this,12000);
@@ -44,6 +45,7 @@ public class NoiseSky extends PApplet {
     }
 
     public void draw() {
+        Functions.run();
         timeCount += 0.01;
         sets();
         shader(currentShader);
@@ -74,38 +76,43 @@ public class NoiseSky extends PApplet {
         float value = message.getMessage()[2];
 
         if (channel == 48) {
-            XFOVDistortion = (float) (value);
+            Functions.XFOVDistortionTarget = value;
             println("XFOVDistortion: " + XFOVDistortion);
         }
 
         if (channel == 49) {
-            weirdMirroring = map(value, 0, 127, -2, 2);
+            Functions.weirdMirroringTarget = value;
             println("weirdMirroring: " + weirdMirroring);
         }
 
         if (channel == 50) {
-            amount = map(value, 0, 127, 0, 10);
+            Functions.amountTarget = value;
             println("amount: " + amount);
         }
 
         if (channel == 51) {
-            clipping = map(value, 0, 127, 0, 20);
+            Functions.clippingTarget = value;
             println("clipping: " + clipping);
         }
 
         if (channel == 52) {
-            noise1 = map(value, 0, 127, 0, 20);
+            Functions.noise1Target = value;
             println("noise1: " + noise1);
         }
 
         if (channel == 53) {
-            noise2 = map(value, 0, 127, 0, 20);
+            Functions.noise2Target = value;
             println("noise2: " + noise2);
         }
 
         if (channel == 54) {
-            size = map(value, 0, 127, 0, 20);
+            Functions.sizeTarget = value;
             println("size: " + size);
+        }
+
+        if (channel == 55) {
+            Functions.easingTarget = map(value, 0, 127, (float) 0.01, (float) 0.1);
+            println("easing: " + Functions.easing);
         }
 
         if (channel == 32 && value == 0) {
