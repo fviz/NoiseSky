@@ -22,7 +22,7 @@ in VertexData
 
 out vec4 fragColor;
 
-float XFOV = 1.5707 + sin(time) * XFOVDistortionInput;
+float XFOV = 1.5707 + sin(time/100) * XFOVDistortionInput;
 
 float de(vec3 p){
     float clipping = clippingInput;// Default 4.0
@@ -54,7 +54,7 @@ void main(void) {
     for (int i=0; i<50; i++){
         //        rayPos=rayPos+unitRay*de(rayPos)-100;                 // Weird mirroring
         rayPos=rayPos+unitRay*de(rayPos)-weirdMirroringInput;// Weird mirroring
-        if (toggleFill) {
+        if (toggleFill == true) {
             if (abs(de(rayPos))<0.1||length(pos-rayPos)>100.0){break;}
         }
     }

@@ -18,6 +18,7 @@ public class NoiseSky extends PApplet {
     private Minim minim;
     AudioInput input;
     BeatDetect beat;
+    BeatListener bl;
 
     private PShader mainShader;
     private PShader brightShader;
@@ -35,6 +36,31 @@ public class NoiseSky extends PApplet {
     static float size = 20;
     static float speed = 0;
     static boolean toggleFill;
+
+    class BeatListener implements AudioListener
+    {
+        private BeatDetect beat;
+        private AudioInput source;
+
+        BeatListener(BeatDetect beat, AudioInput source)
+        {
+            this.source = source;
+            this.source.addListener(this);
+            this.beat = beat;
+        }
+
+        public void samples(float[] samps)
+        {
+            beat.detect(source.mix);
+        }
+
+        public void samples(float[] sampsL, float[] sampsR)
+        {
+            beat.detect(source.mix);
+        }
+    }
+
+
 
     public void settings() {
         size(1280, 720, P3D);
@@ -54,20 +80,20 @@ public class NoiseSky extends PApplet {
         minim = new Minim(this);
         input = minim.getLineIn();
         beat = new BeatDetect(input.bufferSize(), input.sampleRate());
+        beat.detectMode(BeatDetect.FREQ_ENERGY);
         beat.setSensitivity(300);
+        bl = new BeatListener(beat, input);
 
     }
 
     public void draw() {
 
         if (beat.isKick()) {
-            XFOVDistortion = 127;
-            weirdMirroring = (float) 2;
-            amount = (float) 1.5;
-            clipping = (float) 12;
-            noise1 = (float) 20;
-            noise2 = (float) 20;
-            size = 20;
+//            size *= 1.1;
+        }
+
+        if (beat.isHat()) {
+//            noise2 *= 1.1;
         }
 
         Functions.run();
@@ -92,13 +118,13 @@ public class NoiseSky extends PApplet {
         // Receive a MidiMessage
         // MidiMessage is an abstract class, the actual passed object will be either javax.sound.midi.MetaMessage, javax.sound.midi.ShortMessage, javax.sound.midi.SysexMessage.
         // Check it out here http://java.sun.com/j2se/1.5.0/docs/api/javax/sound/midi/package-summary.html
-        println();
-        println("MidiMessage Data:");
-        println("--------");
-        println("Status Byte/MIDI Command:" + message.getStatus());
-        for (int i = 1; i < message.getMessage().length; i++) {
-            println("Param " + (i + 1) + ": " + (int) (message.getMessage()[i] & 0xFF));
-        }
+//        println();
+//        println("MidiMessage Data:");
+//        println("--------");
+//        println("Status Byte/MIDI Command:" + message.getStatus());
+//        for (int i = 1; i < message.getMessage().length; i++) {
+//            println("Param " + (i + 1) + ": " + (int) (message.getMessage()[i] & 0xFF));
+//        }
 
         int channel = message.getMessage()[1];
         float value = message.getMessage()[2];
@@ -248,16 +274,25 @@ public class NoiseSky extends PApplet {
         if (note.pitch == 36) {
             toggleFill = !toggleFill;
         }
+
+        // Toggle color
+        if (note.pitch == 28) {
+            currentShader = brightShader;
+        }
     }
 
     public void noteOff(Note note) {
         // Receive a noteOff
-        println();
-        println("Note Off:");
-        println("--------");
-        println("Channel:" + note.channel());
-        println("Pitch:" + note.pitch());
-        println("Velocity:" + note.velocity());
+//        println();
+//        println("Note Off:");
+//        println("--------");
+//        println("Channel:" + note.channel());
+//        println("Pitch:" + note.pitch());
+//        println("Velocity:" + note.velocity());
+
+        if (note.pitch == 28) {
+            currentShader = mainShader;
+        }
     }
 
 
