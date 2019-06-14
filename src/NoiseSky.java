@@ -63,8 +63,8 @@ public class NoiseSky extends PApplet {
 
 
     public void settings() {
-        size(1280, 720, P3D);
-//        fullScreen();
+//        size(1280, 720, P3D);
+        fullScreen(P3D, 2);
     }
 
     public void setup() {
@@ -108,9 +108,6 @@ public class NoiseSky extends PApplet {
         vertex(0, height);
         endShape();
         resetShader();
-
-        text(input.mix.level() * 10, 100, 100);
-
 
     }
 
