@@ -37,8 +37,7 @@ public class NoiseSky extends PApplet {
     static float speed = 0;
     static boolean toggleFill;
 
-    class BeatListener implements AudioListener
-    {
+    class BeatListener implements AudioListener {
         private BeatDetect beat;
         private AudioInput source;
 
